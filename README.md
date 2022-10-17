@@ -6,7 +6,7 @@ Breaking bad app is a drama series which have details about characters and roles
 
 ```
 lib
-│───main.dart
+│
 └───models
  |   │───character_model.dart
  |   |───death_model.dart
