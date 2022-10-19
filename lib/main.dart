@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -6,6 +7,7 @@ import 'package:breaking_bad/screens/character_screen.dart';
 import 'package:breaking_bad/screens/death_screen.dart';
 import 'package:breaking_bad/screens/episode_screen.dart';
 import 'package:breaking_bad/screens/quote_screen.dart';
+import 'package:breaking_bad/widget/Shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -55,8 +57,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+
   @override
   Widget build(BuildContext context) {
+
     return DefaultTabController(
       length: 4,
       child: Scaffold(
@@ -73,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ),
-        body:const TabBarView(
+        body: TabBarView(
           children: [
             CharacterScreen(),
             EpisodeScreen(),

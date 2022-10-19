@@ -1,10 +1,13 @@
+import 'dart:async';
+
 import 'package:breaking_bad/services/api_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../model/characters_model.dart';
+import '../widget/Shimmer.dart';
 
 class CharacterScreen extends StatefulWidget {
-  const CharacterScreen({Key? key}) : super(key: key);
+   const CharacterScreen( {Key? key}) : super(key: key);
 
   @override
   State<CharacterScreen> createState() => _CharacterScreenState();
@@ -12,29 +15,43 @@ class CharacterScreen extends StatefulWidget {
 
 class _CharacterScreenState extends State<CharacterScreen> {
   List<CharacterModel>? cmodel = [];
-
+  bool isLoading = true;
+  late Timer timer;
   @override
   void initState() {
     super.initState();
+    timer = Timer(Duration(seconds: 3), () {
+      setState(() {
+        isLoading = false;
+        timer.cancel();
+        print("isLoading:$isLoading");
+      });
+    });
     getCharacterData();
   }
 
   void getCharacterData() async{
     cmodel = await ApiService().getCharters();
-    if (!mounted) {
-      return;
-    }
-    Future.delayed(const Duration(seconds: 1)).then((value) => setState((){}));
+   /* if (!mounted) {
+      timer.cancel();
+    }else
+    Future.delayed(const Duration(seconds: 1)).then((value) => setState((){}));*/
   }
 
   @override
   void dispose() {
+    timer.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return cmodel!.isEmpty ? const Center(
+
+    print("isLoading:$isLoading");
+    if(isLoading) {
+      return  ShimmerList();
+    } else {
+      return cmodel!.isEmpty ?  Center(
       child: CircularProgressIndicator(),
     ):ListView.builder(itemCount: cmodel!.length,itemBuilder: (context,index)=>
         Card(
@@ -45,11 +62,11 @@ class _CharacterScreenState extends State<CharacterScreen> {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.33,
                 child:
-                FadeInImage(image: NetworkImage( cmodel![index].img,),
-                  placeholder: AssetImage("assets/images/default.png",),
-                  width: MediaQuery.of(context).size.width * 0.33,
-                  fit: BoxFit.fill,
-               ),
+                Image.network(cmodel![index].img ,
+                  errorBuilder: ( context,  exception,  stackTrace) {
+                    return Image.asset('assets/images/default.png');
+                  },
+                ),
               ),
               Flexible(
                 child: Column(
@@ -117,5 +134,6 @@ class _CharacterScreenState extends State<CharacterScreen> {
           ),
         ),
     );
+    }
   }
 }
