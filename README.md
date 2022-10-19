@@ -2,6 +2,8 @@
 
 Breaking bad app is a drama series which have details about characters and roles and quotes and deaths and episodes.
 
+
+
 ## Directory Structure
 
 ```
@@ -27,6 +29,8 @@ lib
  |      
  │───main.dart
 ```
+
+
 
 ##  Screenshots
 

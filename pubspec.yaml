@@ -38,6 +38,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   http: ^0.13.4
   dart_quote: ^0.0.2
+  shimmer: ^2.0.0
 
 dev_dependencies:
   flutter_test:

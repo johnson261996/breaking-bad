@@ -1,10 +1,13 @@
 
+import 'dart:async';
+
 import 'package:dart_quote/string_quote.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../model/quote_model.dart';
 import '../services/api_service.dart';
+import '../widget/Shimmer.dart';
 
 class QuoteScreen extends StatefulWidget {
   const QuoteScreen({Key? key}) : super(key: key);
@@ -15,28 +18,42 @@ class QuoteScreen extends StatefulWidget {
 
 class _QuoteScreenState extends State<QuoteScreen> {
   List<QuoteModel>? qmodel = [];
-
+  bool isLoading = true;
+  late Timer timer;
   @override
   void initState() {
+    timer = Timer(Duration(seconds: 3), () {
+      setState(() {
+        isLoading = false;
+        timer.cancel();
+        print("isLoading:$isLoading");
+      });
+    });
     super.initState();
     getQuoteData();
   }
 
   void getQuoteData() async{
     qmodel = await ApiService().getQuotes();
-    if (!mounted) {
-      return;
-    }
-    Future.delayed(const Duration(seconds: 1)).then((value) => setState((){}));
+/*    if (!mounted) {
+      timer.cancel();
+    } else
+    Future.delayed(const Duration(seconds: 1)).then((value) => setState((){}));*/
   }
   @override
   void dispose() {
+    timer.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return qmodel!.isEmpty ? const Center(
+
+    print("isLoading:$isLoading");
+    if(isLoading)
+      return ShimmerList();
+    else
+      return qmodel!.isEmpty ? const Center(
       child: CircularProgressIndicator(),
     ):ListView.builder(itemCount: qmodel!.length,itemBuilder: (context,index)=>
         Card(

@@ -1,10 +1,13 @@
 
 
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../model/EpisodeModel.dart';
 import '../services/api_service.dart';
+import '../widget/Shimmer.dart';
 
 class EpisodeScreen extends StatefulWidget {
   const EpisodeScreen({Key? key}) : super(key: key);
@@ -15,30 +18,44 @@ class EpisodeScreen extends StatefulWidget {
 
 class _EpisodeScreenState extends State<EpisodeScreen> {
   List<EpisodeModel>? emodel = [];
-
+  bool isLoading = true;
+  late Timer timer;
   @override
   void initState() {
     super.initState();
+    timer = Timer(Duration(seconds: 3), () {
+      setState(() {
+        isLoading = false;
+        timer.cancel();
+        print("isLoading:$isLoading");
+      });
+    });
     getEpisodeData();
   }
 
   void getEpisodeData() async{
     emodel = await ApiService().getEpisodes();
-    if (!mounted) {
-      return;
-    }
-    Future.delayed(const Duration(seconds: 1)).then((value) => setState((){}));
+  /*  if (!mounted) {
+      timer.cancel();
+    }else
+      Future.delayed(const Duration(seconds: 1)).then((value) => setState((){}));*/
   }
   @override
   void dispose() {
+    timer.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return emodel!.isEmpty ? const Center(
-      child: CircularProgressIndicator(),
-    ):ListView.builder(itemCount: emodel!.length,itemBuilder: (context,index)=>
+
+    print("isLoading:$isLoading");
+    if(isLoading)
+      return ShimmerList();
+    else
+      return emodel!.isEmpty ?  Center(
+        child: CircularProgressIndicator(),
+      ): ListView.builder(itemCount: emodel!.length,itemBuilder: (context,index)=>
         Card(
           elevation: 3,
           color: Colors.white70,

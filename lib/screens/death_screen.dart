@@ -1,9 +1,12 @@
 
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../model/death_model.dart';
 import '../services/api_service.dart';
+import '../widget/Shimmer.dart';
 
 class DeathScreen extends StatefulWidget {
   const DeathScreen({Key? key}) : super(key: key);
@@ -14,27 +17,41 @@ class DeathScreen extends StatefulWidget {
 
 class _DeathScreenState extends State<DeathScreen> {
   List<DeathModel>? dmodel = [];
-
+  bool isLoading = true;
+  late Timer timer;
   @override
   void initState() {
     super.initState();
+    timer = Timer(Duration(seconds: 3), () {
+      setState(() {
+        isLoading = false;
+        timer.cancel();
+        print("isLoading:$isLoading");
+      });
+    });
     getEpisodeData();
   }
 
   void getEpisodeData() async{
     dmodel = await ApiService().getDeaths();
-    if (!mounted) {
-      return;
-    }
-    Future.delayed(const Duration(seconds: 1)).then((value) => setState((){}));
+  /*  if (!mounted) {
+      timer.cancel();
+    }else
+      Future.delayed(const Duration(seconds: 1)).then((value) => setState((){}));*/
   }
   @override
   void dispose() {
+    timer.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+
+    print("isLoading:$isLoading");
+    if(isLoading)
+      return ShimmerList();
+    else
     return dmodel!.isEmpty ? const Center(
       child: CircularProgressIndicator(),
     ):ListView.builder(itemCount: dmodel!.length,itemBuilder: (context,index)=>
